@@ -13,7 +13,7 @@ def load_data(file_name):
             if label not in label_to_numeric:
                 label_to_numeric[label] = len(label_to_numeric)
             numeric_label = label_to_numeric[label]
-            # Append row to data
+
             data.append([float(i) if idx != len(row) - 1 else numeric_label for idx, i in enumerate(row)])
     return data
 
@@ -30,6 +30,7 @@ def get_neighbors(train_set, test_instance, k):
         dist = euclidean_distance(train_instance[:-1], test_instance)
         distances.append((train_instance, dist))
     distances.sort(key=lambda x: x[1])
+    # bierzemy k najblizszych elementów
     neighbors = [x[0] for x in distances[:k]]
     return neighbors
 
@@ -37,18 +38,20 @@ def get_neighbors(train_set, test_instance, k):
 # Predykcja dla pojedynczego wektora
 def predict(train_set, test_instance, k):
     neighbors = get_neighbors(train_set, test_instance, k)
+    #patrzymy jakie etykiety mają sąsiedzi
     classes = [x[-1] for x in neighbors]
+    #zliczamy najczęstszą etykietę
     prediction = max(set(classes), key=classes.count)
     return prediction
 
 
 # Dokładność predykcji
-def accuracy(predictions, test_set):
+def accuracy(actual_labels, predictions):
     correct = 0
-    for i in range(len(predictions)):
-        if predictions[i] == test_set[i][-1]:
+    for i in range(len(actual_labels)):
+        if actual_labels[i] == predictions[i]:
             correct += 1
-    return correct / float(len(predictions))
+    return correct / float(len(actual_labels))
 
 
 def main(k, train_file, test_file):
@@ -64,18 +67,13 @@ def main(k, train_file, test_file):
     # wyznacz rzeczywiste etykiety dla zbioru testowego
     actual_labels = [instance[-1] for instance in test_set]
 
-    # oblicz dokładność klasyfikacji
-    correct = 0
-    for i in range(len(actual_labels)):
-        if actual_labels[i] == predictions[i]:
-            correct += 1
-    accuracy = correct / float(len(actual_labels))
 
     # wyświetl wyniki klasyfikacji
     print('Przewidywane etykiety: ', predictions)
     print('Rzeczywiste etykiety: ', actual_labels)
-    print('Dokładność: ', accuracy)
+    print('Dokładność: ', accuracy(actual_labels, predictions))
 
+    # testowanie
     while True:
         input_str = input('Wpisz testowy wektor (odzielony przecinkami): ')
         if input_str == 'exit':
@@ -86,4 +84,4 @@ def main(k, train_file, test_file):
 
 
 if __name__ == '__main__':
-    main(3, 'wdbc.data', 'wdbc.test.data')
+    main(200, 'wdbc.data', 'wdbc.test.data')
