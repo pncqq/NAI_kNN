@@ -1,7 +1,8 @@
 import csv
 import numpy as np
+import matplotlib.pyplot as plt
 
-#Zmienne globalne
+# Zmienne globalne
 isOpenedFirst = False
 label_to_numeric = {}
 
@@ -58,10 +59,38 @@ def accuracy(actual_labels, predictions):
     return correct / float(len(actual_labels))
 
 
-def main(k, train_file, test_file):
+def main(k, k_range, train_file, test_file):
     # wczytaj zbiory treningowy i testowy
     train_set = load_data(train_file)
     test_set = load_data(test_file)
+
+    # inicjalizacja list dla wyników
+    accuracies = []
+    k_values = []
+
+    # ===========================WYKRES===========================================
+    # przeprowadź testy dla każdej wartości k
+    for k in range(1, k_range):
+        # dokonaj predykcji dla wszystkich obserwacji ze zbioru testowego
+        predictions_plot = []
+        for test_instance in test_set:
+            predictions_plot.append(predict(train_set, test_instance[:-1], k))
+
+        # wyznacz rzeczywiste etykiety dla zbioru testowego
+        actual_labels_plot = [instance[-1] for instance in test_set]
+
+        # oblicz dokładność i dodaj wynik do list
+        acc = accuracy(actual_labels_plot, predictions_plot)
+        accuracies.append(acc)
+        k_values.append(k)
+
+    # wyświetl wykres zależności dokładności od k
+    plt.plot(k_values, accuracies)
+    plt.xlabel('k')
+    plt.ylabel('Dokładność')
+    plt.title('Zależność dokładności od wartości k')
+    plt.show()
+    # ===========================================================================
 
     # dokonaj predykcji dla wszystkich obserwacji ze zbioru testowego
     predictions = []
@@ -78,7 +107,7 @@ def main(k, train_file, test_file):
 
     # testowanie
     while True:
-        input_str = input('Wpisz testowy wektor (odzielony przecinkami): ')
+        input_str = input('Wpisz testowy wektor (odzielony przecinkami) lub exit: ')
         if input_str == 'exit':
             break
         test_instance = [float(i) for i in input_str.split(',')]
@@ -87,4 +116,4 @@ def main(k, train_file, test_file):
 
 
 if __name__ == '__main__':
-    main(25, 'iris.data', 'iris.test.data')
+    main(3, 45, 'wdbc.data', 'wdbc.test.data')
