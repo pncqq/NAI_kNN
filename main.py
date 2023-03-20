@@ -1,11 +1,14 @@
 import csv
 import numpy as np
 
+#Zmienne globalne
+isOpenedFirst = False
+label_to_numeric = {}
+
 
 # Wczytywanie danych z pliku CSV
 def load_data(file_name):
     data = []
-    label_to_numeric = {}
     with open(file_name, 'r') as f:
         reader = csv.reader(f)
         for row in reader:
@@ -29,6 +32,7 @@ def get_neighbors(train_set, test_instance, k):
     for train_instance in train_set:
         dist = euclidean_distance(train_instance[:-1], test_instance)
         distances.append((train_instance, dist))
+
     distances.sort(key=lambda x: x[1])
     # bierzemy k najblizszych elementów
     neighbors = [x[0] for x in distances[:k]]
@@ -38,9 +42,9 @@ def get_neighbors(train_set, test_instance, k):
 # Predykcja dla pojedynczego wektora
 def predict(train_set, test_instance, k):
     neighbors = get_neighbors(train_set, test_instance, k)
-    #patrzymy jakie etykiety mają sąsiedzi
+    # patrzymy jakie etykiety mają sąsiedzi
     classes = [x[-1] for x in neighbors]
-    #zliczamy najczęstszą etykietę
+    # zliczamy najczęstszą etykietę
     prediction = max(set(classes), key=classes.count)
     return prediction
 
@@ -67,10 +71,9 @@ def main(k, train_file, test_file):
     # wyznacz rzeczywiste etykiety dla zbioru testowego
     actual_labels = [instance[-1] for instance in test_set]
 
-
     # wyświetl wyniki klasyfikacji
-    print('Przewidywane etykiety: ', predictions)
-    print('Rzeczywiste etykiety: ', actual_labels)
+    print('Przewidywane etykiety (na podstawie zbioru testowego): ', predictions)
+    print('Rzeczywiste etykiety (w zbiorze testowym): ', actual_labels)
     print('Dokładność: ', accuracy(actual_labels, predictions))
 
     # testowanie
@@ -84,4 +87,4 @@ def main(k, train_file, test_file):
 
 
 if __name__ == '__main__':
-    main(200, 'wdbc.data', 'wdbc.test.data')
+    main(25, 'iris.data', 'iris.test.data')
