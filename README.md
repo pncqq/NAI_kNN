@@ -12,7 +12,6 @@ Implementacja algorytmu **k-Nearest Neighbors (k-NN)** do klasyfikacji danych z 
 ## ⚙️ Technologie
 
 - Python 3.x
-- NumPy (prawdopodobnie używane, nie widoczne w repo)
 
 ## 🧬 Funkcjonalności
 
